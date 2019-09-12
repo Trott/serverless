@@ -162,32 +162,6 @@ function persistentRequest(...args) {
   });
 }
 
-const skippedWithNotice = [];
-
-function skipWithNotice(context, reason, afterCallback) {
-  if (!context || typeof context.skip !== 'function') {
-    throw new TypeError('Passed context is not a valid mocha suite');
-  }
-  if (process.env.CI) return; // Do not tolerate skips in CI environment
-  skippedWithNotice.push({ context, reason });
-  process.stdout.write(chalk.yellow(`\n Skipped due to: ${chalk.red(reason)}\n\n`));
-  if (afterCallback) {
-    try {
-      // Ensure teardown is called
-      // (Mocha fails to do it -> https://github.com/mochajs/mocha/issues/3740)
-      afterCallback();
-    } catch (error) {
-      process.stdout.write(chalk.error(`after callback crashed with: ${error.stack}\n`));
-    }
-  }
-  context.skip();
-}
-
-function skipOnWindowsDisabledSymlinks(error, context, afterCallback) {
-  if (error.code !== 'EPERM' || process.platform !== 'win32') return;
-  skipWithNotice(context, 'Missing admin rights to create symlinks', afterCallback);
-}
-
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -207,8 +181,5 @@ module.exports = {
   getFunctionLogs,
   waitForFunctionLogs,
   persistentRequest,
-  skippedWithNotice,
-  skipWithNotice,
-  skipOnWindowsDisabledSymlinks,
   wait,
 };
