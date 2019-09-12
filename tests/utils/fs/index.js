@@ -8,11 +8,7 @@ const crypto = require('crypto');
 const YAML = require('js-yaml');
 const JSZip = require('jszip');
 
-const tmpDirCommonPath = path.join(
-  os.tmpdir(),
-  'tmpdirs-serverless',
-  crypto.randomBytes(2).toString('hex')
-);
+const tmpDirCommonPath = require('@serverless/test/process-tmp-dir');
 
 function getTmpDirPath() {
   return path.join(tmpDirCommonPath, crypto.randomBytes(8).toString('hex'));
